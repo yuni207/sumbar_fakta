@@ -6,7 +6,11 @@
     {{-- MENGAMBIL TITLE DARI DATABASE --}}
     <title>{{ $setting->title ?? 'Sumbar Fakta' }}</title>
 
-    
+    @if($setting && $setting->favicon)
+    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
+    @else
+    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
+    @endif
 
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
