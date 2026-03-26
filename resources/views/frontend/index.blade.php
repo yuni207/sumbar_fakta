@@ -9,7 +9,7 @@
     @if($setting && $setting->favicon)
     <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
     @else
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @endif
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -54,7 +54,7 @@
                 <a href="https://www.youtube.com/ServiceLogin?service=youtube" target="_blank" class="hover:text-sumbar"><i class="fab fa-youtube"></i></a>
                 <a href="https://twitter.com/login" target="_blank" class="hover:text-sumbar"><i class="fab fa-twitter"></i></a>
                 {{-- MENGAMBIL EMAIL DARI DATABASE --}}
-                <span class="border-l pl-4 tracking-normal font-normal">Hubungi Kami: {{ $setting->email}}</span>
+                <span class="border-l pl-4 tracking-normal font-normal">Hubungi Kami: {{ $setting->email ?? '-' }}</span>
             </div>
         </div>
     </div>
@@ -67,17 +67,12 @@
                 <h1 class="text-5xl font-black italic tracking-tighter">
                     @if($setting && $setting->title)
                     @php
-                    // Pecah kalimat menjadi array berdasarkan spasi
                     $words = explode(' ', $setting->title);
-                    // Ambil kata pertama
                     $firstWord = $words[0];
-                    // Ambil sisa katanya (jika ada)
                     $remainingWords = implode(' ', array_slice($words, 1));
                     @endphp
-
                     <span class="text-sumbar">{{ $firstWord }}</span><span class="text-gray-900">{{ $remainingWords }}</span>
                     @else
-                    {{-- Default jika data di database kosong --}}
                     <span class="text-sumbar">SUMBAR</span><span class="text-gray-900">FAKTA</span>
                     @endif
                 </h1>
@@ -88,15 +83,16 @@
                 </p>
             </div>
 
-            <div class="w-full max-w-[728px]">
-                {{-- MENGAMBIL BANNER IKLAN DARI DATABASE --}}
-                @if($setting && $setting->iklan)
-                <a href="#" target="_blank">
-                    <img src="{{ asset('storage/' . $setting->iklan) }}" alt="Iklan Header" class="w-full h-[90px] object-cover rounded shadow-sm border border-gray-100 hover:opacity-90 transition">
+            <div class="container mx-auto flex items-center justify-between py-4">
+
+                {{-- MENGAMBIL LOGO DARI DATABASE --}}
+                @if($setting && $setting->logo)
+                <a href="{{ url('/') }}">
+                    <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo Website" class="h-12 w-auto object-contain">
                 </a>
                 @else
-                <div class="w-full h-[90px] bg-gray-100 flex items-center justify-center text-gray-400 italic rounded">
-                    Space Iklan
+                <div class="h-12 flex items-center text-gray-400 italic">
+                    Logo Website
                 </div>
                 @endif
             </div>
@@ -111,7 +107,6 @@
                 <li><a href="{{ url('/') }}#ekonomi" class="hover:bg-black/10 px-2 py-1 transition">Ekonomi</a></li>
                 <li><a href="{{ url('/') }}#pendidikan" class="hover:bg-black/10 px-2 py-1 transition">Pendidikan</a></li>
                 <li><a href="{{ url('/') }}#hukum" class="hover:bg-black/10 px-2 py-1 transition">Hukum & Kriminal</a></li>
-
                 <li>
                     <a href="{{ url('/') }}#tv" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1 rounded transition border border-white/20">
                         <i class="fas fa-tv text-[12px]"></i>
@@ -135,11 +130,9 @@
             <span class="bg-gray-800 text-white text-[10px] font-bold px-2 py-1 uppercase italic mr-4 shrink-0 tracking-widest">
                 Terkini
             </span>
-
             <marquee class="text-sm font-medium text-gray-600" onmouseover="this.stop();" onmouseout="this.start();">
                 @forelse($running_news as $news)
                 <span class="mx-4">
-                    {{-- Mengambil cuplikan Konten (bukan Judul) --}}
                     <span class="text-sumbar font-bold"></span>
                     {{ Str::limit(strip_tags($news->content), 100, '...') }}
                 </span>
@@ -154,33 +147,6 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
             <div class="lg:col-span-8">
-
-                <section id="berita-utama" class="mb-12 scroll-mt-24">
-                    <h3 class="text-xl font-black italic uppercase mb-6 flex items-center border-b-4 border-sumbar pb-2">
-                        <span class="bg-sumbar text-white px-2 mr-2">B</span> Berita Utama
-                    </h3>
-
-                    <div class="grid md:grid-cols-2 gap-8">
-                        {{-- Mengambil 2 berita dengan kategori 'Berita Utama' --}}
-                        @foreach($posts->where('category', 'Berita Utama')->take(2) as $pol)
-                        <a href="{{ route('news.show', $pol->id) }}" class="group cursor-pointer block">
-                            {{-- Ukuran gambar ditingkatkan dari h-48 menjadi h-72 (atau h-80 untuk lebih besar lagi) --}}
-                            <div class="h-72 overflow-hidden rounded-lg mb-4 shadow-lg border border-gray-100">
-                                <img src="{{ asset('storage/' . ($pol->image ?? $pol->image_url)) }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-700" alt="{{ $pol->title }}">
-                            </div>
-                            {{-- Judul dengan ukuran teks lebih besar (text-xl) --}}
-                            <h4 class="font-bold text-xl md:text-2xl leading-tight group-hover:text-red-600 transition duration-300">
-                                {{ $pol->title }}
-                            </h4>
-
-                            {{-- Tanggal Rilis --}}
-                            <p class="text-gray-500 text-xs mt-3 font-semibold">
-                                {{ \Carbon\Carbon::parse($pol->release_date)->translatedFormat('d F Y') }}
-                            </p>
-                        </a>
-                        @endforeach
-                    </div>
-                </section>
 
                 <section id="tv" class="mb-12 scroll-mt-24">
                     <h3 class="text-xl font-black italic uppercase mb-6 flex items-center border-b-4 border-sumbar pb-2">
@@ -198,7 +164,6 @@
                         <div class="aspect-video">
                             @if(Str::startsWith($mainVideo->video_url, 'http'))
                             @php
-                            // PERBAIKAN: Menangani format watch?v= dan youtu.be/ agar menjadi format embed yang valid
                             $mainEmbedUrl = str_replace(
                             ['watch?v=', 'youtu.be/'],
                             ['embed/', 'youtube.com/embed/'],
@@ -217,11 +182,11 @@
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         @foreach($sideVideos as $side)
-                        <a href="{{ url('news/' . $side->id) }}" class="flex gap-3 bg-white p-2 rounded shadow-sm hover:shadow-md transition group">
+                        {{-- FIX: pakai route('news.show', $side->slug) --}}
+                        <a href="{{ route('news.show', $side->slug) }}" class="flex gap-3 bg-white p-2 rounded shadow-sm hover:shadow-md transition group">
                             <div class="w-32 h-20 bg-gray-200 rounded overflow-hidden shrink-0">
                                 @if(Str::startsWith($side->video_url, 'http'))
                                 @php
-                                // PERBAIKAN: Berlaku juga untuk video di bagian samping
                                 $sideEmbedUrl = str_replace(
                                 ['watch?v=', 'youtu.be/'],
                                 ['embed/', 'youtube.com/embed/'],
@@ -247,9 +212,10 @@
                     </h3>
                     <div class="grid md:grid-cols-2 gap-6">
                         @foreach($posts->where('category', 'Politik')->take(2) as $pol)
-                        <a href="{{ url('news/' . $pol->id) }}" class="group cursor-pointer block">
+                       
+                        <a href="{{ route('news.show', $pol->slug) }}" class="group cursor-pointer block">
                             <div class="h-48 overflow-hidden rounded mb-3">
-                                <img src="{{ asset('storage/' . $pol->image_url) }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500">
+                                <img src="{{ asset('storage/' . $pol->image_url) }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="{{ $pol->title }}">
                             </div>
                             <h4 class="font-bold text-lg leading-tight group-hover:text-sumbar transition">{{ $pol->title }}</h4>
                         </a>
@@ -262,8 +228,9 @@
                         <span class="bg-sumbar text-white px-2 mr-2">E</span> Ekonomi
                     </h3>
                     @foreach($posts->where('category', 'Ekonomi')->take(1) as $eko)
-                    <a href="{{ url('news/' . $eko->id) }}" class="bg-white p-4 rounded shadow-sm flex gap-4 hover:shadow-md transition group block">
-                        <img src="{{ asset('storage/' . $eko->image_url) }}" class="w-24 h-24 object-cover rounded">
+                  
+                    <a href="{{ route('news.show', $eko->slug) }}" class="bg-white p-4 rounded shadow-sm flex gap-4 hover:shadow-md transition group block">
+                        <img src="{{ asset('storage/' . $eko->image_url) }}" class="w-24 h-24 object-cover rounded" alt="{{ $eko->title }}">
                         <div>
                             <span class="text-sumbar text-[10px] font-bold uppercase">Ekonomi</span>
                             <h4 class="font-bold text-md leading-tight group-hover:text-sumbar transition">{{ $eko->title }}</h4>
@@ -282,7 +249,8 @@
                         <div class="flex items-start gap-4 border-b pb-4">
                             <i class="fas fa-graduation-cap text-sumbar mt-1 text-xl"></i>
                             <div>
-                                <a href="{{ url('news/' . $pen->id) }}">
+                               
+                                <a href="{{ route('news.show', $pen->slug) }}">
                                     <h4 class="font-bold text-gray-800 hover:text-sumbar cursor-pointer transition">{{ $pen->title }}</h4>
                                 </a>
                                 <span class="text-[10px] text-gray-400 uppercase">Pendidikan | {{ $pen->created_at->diffForHumans() }}</span>
@@ -300,9 +268,11 @@
                         @php $hukumPosts = $posts->where('category', 'Hukum'); @endphp
 
                         @foreach($hukumPosts->take(1) as $hukMain)
-                        <a href="{{ url('news/' . $hukMain->id) }}" class="relative h-64 rounded-lg overflow-hidden group mb-4 block">
-                            <img src="{{ asset('storage/' . $hukMain->image_url) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500">
+
+                        <a href="{{ route('news.show', $hukMain->slug) }}" class="relative h-64 rounded-lg overflow-hidden group mb-4 block">
+                            <img src="{{ asset('storage/' . $hukMain->image_url) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $hukMain->title }}">
                             <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black text-white">
+                                
                                 @if($hukMain->type == 'breaking')
                                 <span class="bg-yellow-500 text-black text-[10px] font-black px-2 py-0.5 uppercase mb-2 inline-block">Breaking News</span>
                                 @endif
@@ -314,7 +284,8 @@
 
                         <div class="grid md:grid-cols-2 gap-4">
                             @foreach($hukumPosts->skip(1)->take(2) as $hukSide)
-                            <a href="{{ url('news/' . $hukSide->id) }}" class="flex gap-4 border-b pb-4 border-gray-200 group">
+                            
+                            <a href="{{ route('news.show', $hukSide->slug) }}" class="flex gap-4 border-b pb-4 border-gray-200 group">
                                 <div class="w-20 h-20 bg-gray-200 rounded shrink-0 flex items-center justify-center text-sumbar group-hover:bg-sumbar group-hover:text-white transition">
                                     <i class="fas fa-gavel text-2xl"></i>
                                 </div>
@@ -327,17 +298,19 @@
                         </div>
                     </div>
                 </section>
+
             </div>
 
+            {{-- SIDEBAR --}}
             <aside class="lg:col-span-4 space-y-10">
 
-                <div class="bg-white border-t-4 border-sumbar shadow-sm overflow-hidden border-radius-7 mb-6">
-                    {{-- Header: Link Utama ke IslamicFinder --}}
+                <div class="bg-white border-t-4 border-sumbar shadow-sm overflow-hidden mb-6">
                     <div class="bg-sumbar p-3 text-white flex justify-between items-center">
                         <a href="https://www.islamicfinder.org/world/indonesia/padang/prayer-times/" target="_blank" class="hover:text-gray-200 flex items-center group transition">
                             <h3 class="font-black uppercase text-xs tracking-widest italic flex items-center">
                                 <i class="fas fa-mosque mr-2 group-hover:scale-110 transition"></i>
-                                Jadwal Sholat {{ $settings->city_name ?? 'Padang' }}
+                                
+                                Jadwal Sholat {{ $setting->city_name ?? 'Padang' }}
                             </h3>
                             <i class="fas fa-external-link-alt text-[8px] ml-2 opacity-70"></i>
                         </a>
@@ -347,7 +320,6 @@
                     </div>
 
                     <div class="p-4">
-                        {{-- Info Tambahan ala IslamicFinder --}}
                         <div class="flex items-center justify-between mb-3 px-1">
                             <span class="text-[9px] font-bold text-gray-400 uppercase italic">Metode: Kemenag RI</span>
                             <a href="https://www.islamicfinder.org/islamic-calendar/" target="_blank" class="text-[9px] font-bold text-sumbar hover:underline">
@@ -357,13 +329,12 @@
 
                         <div class="grid grid-cols-3 gap-2 text-center">
                             @php
-                            // Data tetap diambil dari database admin agar sinkron
                             $jadwal = [
-                            'Subuh' => $settings->subuh ?? '05:04',
-                            'Dzuhur' => $settings->dzuhur ?? '12:26',
-                            'Ashar' => $settings->ashar ?? '15:35',
-                            'Maghrib' => $settings->maghrib ?? '18:31',
-                            'Isya' => $settings->isya ?? '19:39',
+                            'Subuh' => $setting->subuh ?? '05:04',
+                            'Dzuhur' => $setting->dzuhur ?? '12:26',
+                            'Ashar' => $setting->ashar ?? '15:35',
+                            'Maghrib' => $setting->maghrib ?? '18:31',
+                            'Isya' => $setting->isya ?? '19:39',
                             ];
                             @endphp
 
@@ -374,14 +345,12 @@
                             </div>
                             @endforeach
 
-                            {{-- Link ke Fitur IslamicFinder lainnya (Misal: Qibla/Weather) --}}
                             <a href="https://www.islamicfinder.org/qibla-direction/" target="_blank" class="bg-gray-50 p-2 rounded border border-gray-100 flex flex-col justify-center items-center hover:bg-green-50 transition">
                                 <i class="fas fa-compass text-green-600 text-xs"></i>
                                 <p class="text-[9px] font-bold mt-1 text-gray-700 uppercase">Kiblat</p>
                             </a>
                         </div>
 
-                        {{-- Tombol Footer Widget --}}
                         <a href="https://www.islamicfinder.org" target="_blank" class="mt-4 block text-center bg-gray-100 hover:bg-gray-200 text-gray-600 py-1.5 rounded text-[10px] font-bold uppercase transition">
                             Lihat Detail di IslamicFinder
                         </a>
@@ -420,7 +389,7 @@
                     @endphp
                     <div class="space-y-6">
                         @forelse($popularPosts as $popular)
-                        <a href="{{ url('news/' . $popular->id) }}" class="flex gap-4 items-start group cursor-pointer block">
+                        <a href="{{ route('news.show', $popular->slug) }}" class="flex gap-4 items-start group cursor-pointer block">
                             <span class="text-3xl font-black text-gray-100 group-hover:text-sumbar transition leading-none">
                                 {{ sprintf('%02d', $loop->iteration) }}
                             </span>
@@ -437,57 +406,19 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded shadow-lg overflow-hidden border relative">
+                <div class="w-full">
 
-                    <!-- Label Iklan -->
-                    <span class="text-[9px] bg-gray-800 text-white px-2 py-1 rounded absolute top-2 right-2">
-                        ADS
-                    </span>
+                    @if(!empty($setting?->iklan))
 
-                    <!-- Gambar Iklan -->
-                    <a href="https://www.tokopedia.com" target="_blank">
-                        <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f" alt="Promo Belanja Online" class="w-full h-48 object-cover">
-                    </a>
+                    <img src="{{ asset('storage/'.$setting->iklan) }}" alt="Iklan Header" class="w-full h-auto rounded shadow-sm border border-gray-100">
 
-                    <!-- Konten Iklan -->
-                    <div class="p-4">
+                    @else
 
-                        <h4 class="font-bold text-sm mb-2">
-                            Promo Belanja Online Terbesar!
-                        </h4>
-
-                        <p class="text-xs text-gray-600 mb-3">
-                            Nikmati berbagai promo menarik mulai dari elektronik, fashion, hingga kebutuhan rumah tangga.
-                            Diskon hingga <b>70%</b> dan gratis ongkir untuk berbagai produk pilihan.
-                        </p>
-
-                        <!-- Tombol -->
-                        <a href="https://www.tokopedia.com" target="_blank" class="block text-center bg-green-600 text-white text-xs font-semibold py-2 rounded hover:bg-green-700 transition">
-                            Lihat Promo
-                        </a>
-
-                        <!-- Garis -->
-                        <hr class="my-4">
-
-                        <!-- Iklan kedua -->
-                        <a href="https://www.traveloka.com" target="_blank">
-                            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt="Promo Liburan" class="w-full h-40 object-cover rounded mb-3">
-                        </a>
-
-                        <h4 class="font-bold text-sm mb-1">
-                            Promo Tiket & Hotel Murah
-                        </h4>
-
-                        <p class="text-xs text-gray-600 mb-3">
-                            Rencanakan liburan Anda sekarang dengan harga spesial.
-                            Dapatkan diskon tiket pesawat dan hotel hingga 50%.
-                        </p>
-
-                        <a href="https://www.traveloka.com" target="_blank" class="block text-center bg-blue-600 text-white text-xs font-semibold py-2 rounded hover:bg-blue-700 transition">
-                            Pesan Sekarang
-                        </a>
-
+                    <div class="w-full py-10 bg-gray-100 flex items-center justify-center text-gray-400 italic rounded">
+                        Space Iklan
                     </div>
+
+                    @endif
 
                 </div>
 
@@ -505,7 +436,6 @@
                     $firstWord = $words[0];
                     $remainingWords = count($words) > 1 ? implode(' ', array_slice($words, 1)) : '';
                     @endphp
-
                     <span class="text-sumbar">{{ $firstWord }}</span>
                     @if($remainingWords)
                     <span class="text-slate-800">&nbsp;{{ $remainingWords }}</span>
@@ -536,14 +466,15 @@
                 <div class="flex flex-col gap-3">
                     <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
                         <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Hubungi Kami:</p>
-                        <p class="text-[11px] text-slate-700 font-black uppercase">{{ $setting->email }}</p>
+                      
+                        <p class="text-[11px] text-slate-700 font-black uppercase">{{ $setting->email ?? '-' }}</p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="container mx-auto px-4 border-t border-slate-200 pt-8 text-center">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; 2026 Sumbar Fakta. Hak Cipta Dilindungi.</p>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; {{ date('Y') }} {{ $setting->title ?? 'Sumbar Fakta' }}. Hak Cipta Dilindungi.</p>
         </div>
     </footer>
 
@@ -552,22 +483,16 @@
             const input = document.getElementById('searchInput');
             const query = input.value.trim();
 
-            // 1. Jika input sedang tersembunyi, tampilkan dan fokus
             if (input.classList.contains('hidden')) {
                 input.classList.remove('hidden');
                 input.focus();
-            }
-            // 2. Jika input sudah tampil DAN ada teksnya, langsung cari
-            else if (query !== "") {
+            } else if (query !== "") {
                 window.location.href = "{{ route('news.search') }}?q=" + encodeURIComponent(query);
-            }
-            // 3. Jika input tampil tapi kosong, sembunyikan kembali
-            else {
+            } else {
                 input.classList.add('hidden');
             }
         }
 
-        // Menangani tekan tombol Enter
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const query = this.value.trim();

@@ -37,7 +37,6 @@
 
         <hr class="mb-30">
 
-        {{-- Menampilkan Error Validasi Jika Ada --}}
         @if ($errors->any())
         <div class="alert alert-danger border-radius-7">
             <ul>
@@ -59,8 +58,12 @@
                     </div>
 
                     <div class="form-group">
+                        <label class="weight-600">Author</label>
+                        <input type="text" name="author" value="{{ old('author', auth()->user()->name ?? '') }}" class="form-control border-radius-7" placeholder="Nama Penulis">
+                    </div>
+
+                    <div class="form-group">
                         <label class="weight-600">Isi Konten <span class="text-danger">*</span></label>
-                        {{-- Tambahkan ID 'editor' untuk integrasi text editor nantinya --}}
                         <textarea name="content" id="editor" class="form-control border-radius-7" style="height: 400px;" placeholder="Tuliskan berita lengkap di sini...">{{ old('content') }}</textarea>
                     </div>
                 </div>
@@ -68,20 +71,34 @@
                 <div class="col-md-4">
                     <div class="form-group">
                         <label class="weight-600">Kategori <span class="text-danger">*</span></label>
-                        <input type="text" name="category" value="{{ old('category') }}" required class="form-control border-radius-7" placeholder="Misal: Politik, Ekonomi, Budaya">
+                        <select name="category" required class="form-control border-radius-7">
+                            <option value="">-- Pilih Kategori --</option>
+                            {{-- Nilai value HARUS kapital agar cocok dengan filter frontend --}}
+                            {{-- Frontend: $posts->where('category', 'Berita Utama') --}}
+                            <option value="TV" {{ old('category') == 'TV' ? 'selected' : '' }}>TV</option>
+                            <option value="Politik" {{ old('category') == 'Politik'      ? 'selected' : '' }}>Politik</option>
+                            <option value="Ekonomi" {{ old('category') == 'Ekonomi'      ? 'selected' : '' }}>Ekonomi</option>
+                            <option value="Pendidikan" {{ old('category') == 'Pendidikan'   ? 'selected' : '' }}>Pendidikan</option>
+                            <option value="Hukum" {{ old('category') == 'Hukum'        ? 'selected' : '' }}>Hukum &amp; Kriminal</option>
+                        </select>
                     </div>
 
                     <div class="form-group">
                         <label class="weight-600">Tipe Post <span class="text-danger">*</span></label>
                         <select name="type" required class="form-control border-radius-7">
-                            <option value="artikel" {{ old('type') == 'artikel' ? 'selected' : '' }}>Artikel</option>
-                            <option value="video" {{ old('type') == 'video' ? 'selected' : '' }}>Video (Sumbar TV)</option>
+                            <option value="artikel" {{ old('type') == 'artikel'  ? 'selected' : '' }}>Artikel</option>
+                            <option value="video" {{ old('type') == 'video'    ? 'selected' : '' }}>Video (Sumbar TV)</option>
                             <option value="breaking" {{ old('type') == 'breaking' ? 'selected' : '' }}>Breaking News</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label class="weight-600">Gambar Unggulan (Upload) <span class="text-danger">*</span></label>
+                        <label class="weight-600">Tanggal Rilis <span class="text-danger">*</span></label>
+                        <input type="datetime-local" name="release_date" value="{{ old('release_date') }}" class="form-control border-radius-7">
+                    </div>
+
+                    <div class="form-group">
+                        <label class="weight-600">Gambar Unggulan <span class="text-danger">*</span></label>
                         <input type="file" name="image_url" required class="form-control-file form-control height-auto border-radius-7">
                         <small class="form-text text-muted">Format: JPG, PNG, JPEG, GIF. Maks: 2MB.</small>
                     </div>
@@ -95,8 +112,7 @@
                     <div class="form-group">
                         <label class="weight-600">Link Video (Opsional)</label>
                         <input type="url" name="video_link" value="{{ old('video_link') }}" class="form-control border-radius-7" placeholder="https://youtube.com/watch?v=...">
-                        <small class="form-text text-muted">Gunakan jika tidak meng-upload.
-                        </small>
+                        <small class="form-text text-muted">Gunakan jika tidak meng-upload.</small>
                     </div>
                 </div>
             </div>

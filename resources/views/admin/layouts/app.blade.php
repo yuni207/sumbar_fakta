@@ -4,7 +4,11 @@
     <meta charset="utf-8" />
     <title>Admin - Sumbar Fakta</title>
 
-    <link rel="icon" type="image/jpg" href="{{ asset('images/favicon.jpg') }}" />
+    @if($setting && $setting->favicon)
+    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
+    @else
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
+    @endif
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
 

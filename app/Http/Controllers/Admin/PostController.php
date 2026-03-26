@@ -23,9 +23,8 @@ class PostController extends Controller
 
     public function store(Request $request)
     {
-        // Validasi disusun sesuai urutan yang Anda minta
         $request->validate([
-            'category'     => 'required',
+            'category'     => 'required|in:Berita Utama,Politik,Ekonomi,Pendidikan,Hukum',
             'title'        => 'required|max:255',
             'content'      => 'required',
             'author'       => 'required|string|max:100',
@@ -36,23 +35,21 @@ class PostController extends Controller
             'type'         => 'required|in:artikel,video,breaking',
         ]);
 
-        // Inisialisasi data dengan urutan yang konsisten
         $data = [
-            'category'     => $request->category,
+            'category'     => $request->category,  // sudah kapital dari form
             'title'        => $request->title,
             'slug'         => Str::slug($request->title),
             'content'      => $request->content,
             'author'       => $request->author,
             'release_date' => $request->release_date,
             'type'         => $request->type,
+            'views'        => 0,
         ];
 
-        // 1. Proses Image (Thumbnail)
         if ($request->hasFile('image_url')) {
             $data['image_url'] = $request->file('image_url')->store('posts', 'public');
         }
 
-        // 2. Proses Video (File atau Link)
         if ($request->hasFile('video_file')) {
             $data['video_url'] = $request->file('video_file')->store('videos', 'public');
         } elseif ($request->video_link) {
@@ -96,30 +93,40 @@ class PostController extends Controller
             'type'         => $request->type,
         ];
 
-        // Update Gambar
+        // Update Image
         if ($request->hasFile('image_url')) {
+
             if ($post->image_url) {
                 Storage::disk('public')->delete($post->image_url);
             }
-            $data['image_url'] = $request->file('image_url')->store('posts', 'public');
+
+            $data['image_url'] = $request->file('image_url')
+                ->store('posts', 'public');
         }
 
         // Update Video
         if ($request->hasFile('video_file')) {
+
             if ($post->video_url && !Str::startsWith($post->video_url, 'http')) {
                 Storage::disk('public')->delete($post->video_url);
             }
-            $data['video_url'] = $request->file('video_file')->store('videos', 'public');
+
+            $data['video_url'] = $request->file('video_file')
+                ->store('videos', 'public');
         } elseif ($request->video_link) {
+
             if ($post->video_url && !Str::startsWith($post->video_url, 'http')) {
                 Storage::disk('public')->delete($post->video_url);
             }
+
             $data['video_url'] = $request->video_link;
         }
 
         $post->update($data);
 
-        return redirect()->route('admin.posts.index')->with('success', 'Konten berhasil diperbarui!');
+        return redirect()
+            ->route('admin.posts.index')
+            ->with('success', 'Konten berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -159,13 +166,20 @@ class PostController extends Controller
 
     public function show($slug)
     {
-        // Mencari post berdasarkan slug
-        // Jika tidak ditemukan, akan otomatis memunculkan error 404
         $post = Post::where('slug', $slug)->firstOrFail();
 
-        // (Opsional) Logika untuk menghitung jumlah tayangan (views) bisa diletakkan di sini
-        // $post->increment('views');
+        // View counter — hanya hitung sekali per session per artikel
+        $sessionKey = 'post_viewed_' . $post->id;
+        if (!session()->has($sessionKey)) {
+            $post->increment('views');
+            session()->put($sessionKey, true);
+        }
 
-        return view('news.show', compact('post'));
+        // Variabel tambahan untuk layout (header, running text, sidebar)
+        $setting      = \App\Models\Setting::first();
+        $running_news = Post::latest()->limit(5)->get();
+        $posts        = Post::latest()->get(); // dipakai sidebar Terpopuler
+
+        return view('news.show', compact('post', 'setting', 'running_news', 'posts'));
     }
 }

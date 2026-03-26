@@ -3,12 +3,9 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\HomeController;
-use App\Http\Controllers\Admin\KategoriController;
 use App\Http\Controllers\Admin\SettingController;
-use App\Http\Controllers\Admin\NewsController as AdminNewsController; // Alias agar tidak bentrok
 use App\Http\Controllers\Admin\PostController;
 use App\Models\Setting;
-use App\Models\News;
 use App\Models\Post;
 
 // --- HALAMAN DEPAN (PUBLIK) ---

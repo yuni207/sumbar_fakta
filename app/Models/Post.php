@@ -20,7 +20,8 @@ class Post extends Model
         'release_date',
         'image_url',
         'video_url',
-        'type'
+        'type',
+        'views'
     ];
 
     /**

@@ -50,58 +50,123 @@
                         <th class="text-center">Gambar</th>
                         <th class="text-center">Kategori</th>
                         <th>Judul</th>
-                        <th class="text-center">Tipe/Video</th>
+                        <th class="text-center">Author</th>
+                        <th class="text-center">Rilis</th>
+                        <th class="text-center">Views</th>
+                        <th class="text-center">Tipe / Video</th>
                         <th class="datatable-nosort text-center">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @foreach($posts as $item)
                     <tr>
+
+                        {{-- GAMBAR --}}
                         <td class="text-center">
                             @if($item->image_url)
-                            <img src="{{ asset('storage/' . $item->image_url) }}" class="border-radius-7 shadow-sm" style="width: 60px; height: 45px; object-fit: cover;" alt="Thumb">
+                            <img src="{{ asset('storage/' . $item->image_url) }}" class="border-radius-7 shadow-sm" style="width:60px;height:45px;object-fit:cover;">
                             @else
-                            <div class="bg-light border-radius-7 d-flex align-items-center justify-content-center mx-auto" style="width: 60px; height: 45px; border: 1px dashed #ccc;">
+                            <div class="bg-light border-radius-7 d-flex align-items-center justify-content-center mx-auto" style="width:60px;height:45px;border:1px dashed #ccc;">
                                 <i class="fa fa-image text-muted"></i>
                             </div>
                             @endif
                         </td>
+
+                        {{-- KATEGORI --}}
                         <td class="text-center">
-                            <span class="badge badge-outline-danger text-sumbar border-danger uppercase" style="font-size: 10px;">{{ $item->category }}</span>
+                            <span class="badge badge-outline-danger text-sumbar border-danger uppercase" style="font-size:10px;">
+                                {{ $item->category }}
+                            </span>
                         </td>
-                        <td style="white-space: normal; min-width: 250px; word-break: break-word;">
-                            <div class="font-weight-bold text-dark" style="word-break: break-word;">{{ Str::limit($item->title, 70) }}</div>
-                            <small class="text-muted">Slug: {{ $item->slug }}</small>
+
+                        {{-- JUDUL + SLUG + CONTENT --}}
+                        <td style="white-space:normal;min-width:250px;">
+                            <div class="font-weight-bold text-dark">
+                                {{ Str::limit($item->title,70) }}
+                            </div>
+
+                            <small class="text-muted">
+                                Slug: {{ $item->slug }}
+                            </small>
+
+                            <br>
+
+                            <small class="text-secondary">
+                                {{ Str::limit(strip_tags($item->content),80) }}
+                            </small>
                         </td>
+
+                        {{-- AUTHOR --}}
                         <td class="text-center">
+                            <span class="badge badge-light">
+                                <i class="fa fa-user mr-1"></i>
+                                {{ $item->author ?? '-' }}
+                            </span>
+                        </td>
+
+                        {{-- RELEASE DATE --}}
+                        <td class="text-center">
+                            @if($item->release_date)
+                            {{ \Carbon\Carbon::parse($item->release_date)->format('d M Y') }}
+                            @else
+                            -
+                            @endif
+                        </td>
+
+                        {{-- VIEWS --}}
+                        <td class="text-center">
+                            <span class="badge badge-success">
+                                👁 {{ number_format($item->views ?? 0) }}
+                            </span>
+                        </td>
+
+                        {{-- TYPE / VIDEO --}}
+                        <td class="text-center">
+
                             @if($item->type == 'video' && $item->video_url)
-                            @if(Str::startsWith($item->video_url, 'http'))
-                            <a href="{{ $item->video_url }}" target="_blank" class="badge badge-info shadow-sm" title="Buka Link YouTube">
+
+                            @if(Str::startsWith($item->video_url,'http'))
+                            <a href="{{ $item->video_url }}" target="_blank" class="badge badge-info shadow-sm">
                                 <i class="fa fa-youtube-play mr-1"></i> Link
                             </a>
                             @else
-                            <a href="{{ asset('storage/' . $item->video_url) }}" target="_blank" class="badge badge-primary shadow-sm" title="Putar Video Lokal">
+                            <a href="{{ asset('storage/'.$item->video_url) }}" target="_blank" class="badge badge-primary shadow-sm">
                                 <i class="fa fa-play-circle mr-1"></i> File
                             </a>
                             @endif
+
+                            @elseif($item->type == 'breaking')
+
+                            <span class="badge badge-danger">🔥 Breaking</span>
+
+                            @elseif($item->type == 'headline')
+
+                            <span class="badge badge-warning">⭐ Headline</span>
+
                             @else
-                            <span class="badge badge-{{ $item->type == 'breaking' ? 'danger' : 'secondary' }}">
+
+                            <span class="badge badge-secondary">
                                 {{ ucfirst($item->type) }}
                             </span>
+
                             @endif
+
                         </td>
+
+                        {{-- AKSI --}}
                         <td class="text-center">
                             <div class="btn-group">
-                                <a href="{{ route('admin.posts.edit', $item->id) }}" class="btn btn-sm btn-outline-success mr-2 border-radius-7" title="Edit">
+                                <a href="{{ route('admin.posts.edit',$item->id) }}" class="btn btn-sm btn-outline-success mr-2 border-radius-7">
                                     <i class="fa fa-edit"></i>
                                 </a>
-                                <button class="btn btn-sm btn-outline-danger border-radius-7" data-toggle="modal" data-target="#delete-modal-{{ $item->id }}" title="Hapus">
+
+                                <button class="btn btn-sm btn-outline-danger border-radius-7" data-toggle="modal" data-target="#delete-modal-{{ $item->id }}">
                                     <i class="fa fa-trash"></i>
                                 </button>
                             </div>
                         </td>
-                    </tr>
 
+                    </tr>
                     {{-- Modal Hapus --}}
                     <div class="modal fade" id="delete-modal-{{ $item->id }}" tabindex="-1" role="dialog" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-centered" role="document">

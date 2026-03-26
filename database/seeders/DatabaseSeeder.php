@@ -25,6 +25,7 @@ class DatabaseSeeder extends Seeder
                 'tagline'   => 'Cerdas, Tajam, Terpercaya',
                 'email'     => 'redaksi@sumbarfakta.com',
                 'favicon'   => null,
+                'logo'      => null,
                 // Tambahkan field lain jika ada yang bersifat NOT NULL
             ]
         );

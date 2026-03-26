@@ -3,9 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $news->title }} | {{ $setting->title ?? 'Sumbar Fakta' }}</title>
+    <title>{{ $post->title }} | {{ $setting->title ?? 'Sumbar Fakta' }}</title>
 
-    {{-- FAVICON --}}
     @if($setting && $setting->favicon)
     <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
     @endif
@@ -80,7 +79,6 @@
                 </p>
             </div>
 
-            {{-- IKLAN HEADER --}}
             <div class="w-full max-w-[728px]">
                 @if($setting && $setting->iklan)
                 <a href="#" target="_blank">
@@ -102,9 +100,11 @@
                 <li><a href="{{ url('/') }}#ekonomi" class="hover:bg-black/10 px-2 py-1 transition">Ekonomi</a></li>
                 <li><a href="{{ url('/') }}#pendidikan" class="hover:bg-black/10 px-2 py-1 transition">Pendidikan</a></li>
                 <li><a href="{{ url('/') }}#hukum" class="hover:bg-black/10 px-2 py-1 transition">Hukum & Kriminal</a></li>
-                <li><a href="{{ url('/') }}#tv" class="flex items-center gap-2 bg-white/10 px-3 py-1 rounded">
+                <li>
+                    <a href="{{ url('/') }}#tv" class="flex items-center gap-2 bg-white/10 px-3 py-1 rounded">
                         <i class="fas fa-tv text-[12px]"></i> TV LIVE
-                    </a></li>
+                    </a>
+                </li>
             </ul>
             <div class="flex items-center space-x-4">
                 <input id="searchInput" type="text" placeholder="Cari berita..." class="hidden md:block px-3 py-1 text-xs rounded border-none outline-none">
@@ -134,53 +134,68 @@
             {{-- ARTIKEL DETAIL --}}
             <div class="lg:col-span-8">
                 <article class="bg-white p-6 md:p-10 rounded-lg shadow-sm border border-gray-100">
+
+                    {{-- BREADCRUMB --}}
                     <nav class="flex text-[10px] font-bold uppercase tracking-widest text-gray-400 mb-6">
                         <a href="/" class="hover:text-sumbar">Home</a>
                         <span class="mx-2">/</span>
-                        <span class="text-sumbar">{{ $news->category }}</span>
+                        <span class="text-sumbar">{{ $post->category }}</span>
                     </nav>
 
+                    {{-- JUDUL --}}
                     <h1 class="text-3xl md:text-5xl font-black italic uppercase leading-tight tracking-tighter mb-6">
-                        {{ $news->title }}
+                        {{ $post->title }}
                     </h1>
 
+                    {{-- META: AUTHOR & TANGGAL --}}
                     <div class="flex flex-wrap items-center gap-6 border-y border-gray-100 py-4 mb-8 text-[11px] font-bold text-gray-500 uppercase tracking-wider">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 bg-sumbar rounded-full flex items-center justify-center text-white">
                                 <i class="fas fa-user text-[10px]"></i>
                             </div>
-                            <span>Oleh: <span class="text-gray-900">{{ $news->author ?? 'Redaksi' }}</span></span>
+                            <span>Oleh: <span class="text-gray-900">{{ $post->author ?? 'Redaksi' }}</span></span>
                         </div>
                         <div class="flex items-center gap-2">
                             <i class="far fa-calendar-alt text-sumbar"></i>
-                            <span>{{ $news->created_at->translatedFormat('l, d F Y') }}</span>
+                            {{-- Gunakan release_date sesuai field di database --}}
+                            <span>{{ \Carbon\Carbon::parse($post->release_date)->translatedFormat('l, d F Y') }}</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <i class="far fa-eye text-sumbar"></i>
+                            <span>{{ number_format($post->views) }} Dilihat</span>
                         </div>
                     </div>
 
                     {{-- MEDIA: VIDEO ATAU GAMBAR --}}
                     <div class="mb-10">
-                        @if($news->type === 'video' && $news->video_url)
+                        @if($post->type === 'video' && $post->video_url)
                         <div class="aspect-video w-full rounded-lg overflow-hidden shadow-lg">
                             @php
-                            $embedUrl = str_replace(['watch?v=', 'youtu.be/'], ['embed/', 'youtube.com/embed/'], $news->video_url);
+                            $embedUrl = str_replace(
+                            ['watch?v=', 'youtu.be/'],
+                            ['embed/', 'youtube.com/embed/'],
+                            $post->video_url
+                            );
                             @endphp
                             <iframe class="w-full h-full" src="{{ $embedUrl }}" frameborder="0" allowfullscreen></iframe>
                         </div>
-                        @elseif($news->image_url)
-                        <img src="{{ asset('storage/' . $news->image_url) }}" alt="{{ $news->title }}" class="w-full h-auto rounded-lg shadow-lg">
-                        <p class="mt-3 text-xs italic text-gray-500 border-l-4 border-sumbar pl-3">Keterangan: {{ $news->title }}</p>
+                        @elseif($post->image_url)
+                        <img src="{{ asset('storage/' . $post->image_url) }}" alt="{{ $post->title }}" class="w-full h-auto rounded-lg shadow-lg">
+                        <p class="mt-3 text-xs italic text-gray-500 border-l-4 border-sumbar pl-3">{{ $post->title }}</p>
                         @endif
                     </div>
 
                     {{-- ISI BERITA --}}
                     <div class="prose max-w-none text-gray-700 leading-relaxed text-lg">
-                        {!! $news->content !!}
+                        {!! $post->content !!}
                     </div>
+
                 </article>
             </div>
 
             {{-- SIDEBAR --}}
             <aside class="lg:col-span-4 space-y-10">
+
                 {{-- JADWAL SHOLAT --}}
                 <div class="bg-white border-t-4 border-sumbar shadow-sm">
                     <div class="bg-sumbar p-3 text-white">
@@ -209,80 +224,58 @@
 
                 {{-- BERITA TERPOPULER --}}
                 <div class="bg-white p-5 border-t-4 border-sumbar shadow-sm">
-                    <div class="flex items-center justify-between mb-6 border-b pb-2 font-black uppercase text-sm italic text-sumbar">
-                        <h3>Terpopuler</h3>
+                    <div class="flex items-center justify-between mb-6 border-b pb-2">
+                        <h3 class="font-black uppercase text-sm italic text-sumbar">Terpopuler</h3>
                         <i class="fas fa-fire text-orange-500"></i>
                     </div>
                     <div class="space-y-6">
-                        @foreach($posts as $popular)
-                        <a href="{{ route('news.show', $popular->slug) }}" class="flex gap-4 items-start group">
-                            <span class="text-3xl font-black text-gray-100 group-hover:text-sumbar transition">{{ sprintf('%02d', $loop->iteration) }}</span>
+                        @forelse($posts->sortByDesc('views')->take(5) as $popular)
+                        <a href="{{ route('news.show', $popular->slug) }}" class="flex gap-4 items-start group block">
+                            <span class="text-3xl font-black text-gray-100 group-hover:text-sumbar transition leading-none">
+                                {{ sprintf('%02d', $loop->iteration) }}
+                            </span>
                             <div>
-                                <p class="text-sm font-bold group-hover:text-sumbar transition leading-snug">{{ Str::limit($popular->title, 60) }}</p>
+                                <p class="text-sm font-bold group-hover:text-sumbar transition leading-snug">
+                                    {{ Str::limit($popular->title, 60) }}
+                                </p>
                                 <span class="text-[10px] text-gray-400">{{ $popular->created_at->diffForHumans() }}</span>
                             </div>
                         </a>
-                        @endforeach
+                        @empty
+                        <p class="text-sm text-gray-400 text-center">Belum ada berita.</p>
+                        @endforelse
                     </div>
                 </div>
 
+                {{-- IKLAN SIDEBAR --}}
                 <div class="bg-white rounded shadow-lg overflow-hidden border relative">
-
-                    <!-- Label Iklan -->
-                    <span class="text-[9px] bg-gray-800 text-white px-2 py-1 rounded absolute top-2 right-2">
-                        ADS
-                    </span>
-
-                    <!-- Gambar Iklan -->
+                    <span class="text-[9px] bg-gray-800 text-white px-2 py-1 rounded absolute top-2 right-2">ADS</span>
                     <a href="https://www.tokopedia.com" target="_blank">
                         <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f" alt="Promo Belanja Online" class="w-full h-48 object-cover">
                     </a>
-
-                    <!-- Konten Iklan -->
                     <div class="p-4">
-
-                        <h4 class="font-bold text-sm mb-2">
-                            Promo Belanja Online Terbesar!
-                        </h4>
-
-                        <p class="text-xs text-gray-600 mb-3">
-                            Nikmati berbagai promo menarik mulai dari elektronik, fashion, hingga kebutuhan rumah tangga.
-                            Diskon hingga <b>70%</b> dan gratis ongkir untuk berbagai produk pilihan.
-                        </p>
-
-                        <!-- Tombol -->
+                        <h4 class="font-bold text-sm mb-2">Promo Belanja Online Terbesar!</h4>
+                        <p class="text-xs text-gray-600 mb-3">Nikmati berbagai promo menarik. Diskon hingga <b>70%</b> dan gratis ongkir.</p>
                         <a href="https://www.tokopedia.com" target="_blank" class="block text-center bg-green-600 text-white text-xs font-semibold py-2 rounded hover:bg-green-700 transition">
                             Lihat Promo
                         </a>
-
-                        <!-- Garis -->
                         <hr class="my-4">
-
-                        <!-- Iklan kedua -->
                         <a href="https://www.traveloka.com" target="_blank">
                             <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt="Promo Liburan" class="w-full h-40 object-cover rounded mb-3">
                         </a>
-
-                        <h4 class="font-bold text-sm mb-1">
-                            Promo Tiket & Hotel Murah
-                        </h4>
-
-                        <p class="text-xs text-gray-600 mb-3">
-                            Rencanakan liburan Anda sekarang dengan harga spesial.
-                            Dapatkan diskon tiket pesawat dan hotel hingga 50%.
-                        </p>
-
+                        <h4 class="font-bold text-sm mb-1">Promo Tiket & Hotel Murah</h4>
+                        <p class="text-xs text-gray-600 mb-3">Dapatkan diskon tiket pesawat dan hotel hingga 50%.</p>
                         <a href="https://www.traveloka.com" target="_blank" class="block text-center bg-blue-600 text-white text-xs font-semibold py-2 rounded hover:bg-blue-700 transition">
                             Pesan Sekarang
                         </a>
-
                     </div>
-
                 </div>
+
             </aside>
         </div>
     </main>
 
+    {{-- FOOTER --}}
     <footer class="bg-[#f8fafc] text-slate-700 pt-16 pb-8 border-t-8 border-sumbar">
         <div class="container mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
             <div>
@@ -293,45 +286,36 @@
                     $firstWord = $words[0];
                     $remainingWords = count($words) > 1 ? implode(' ', array_slice($words, 1)) : '';
                     @endphp
-
                     <span class="text-sumbar">{{ $firstWord }}</span>
-                    @if($remainingWords)
-                    <span class="text-slate-800">&nbsp;{{ $remainingWords }}</span>
-                    @endif
+                    @if($remainingWords)<span class="text-slate-800">&nbsp;{{ $remainingWords }}</span>@endif
                     @else
-                    <span class="text-sumbar">SUMBAR</span>
-                    <span class="text-slate-800">&nbsp;FAKTA</span>
+                    <span class="text-sumbar">SUMBAR</span><span class="text-slate-800">&nbsp;FAKTA</span>
                     @endif
                 </h2>
                 <p class="text-[10px] tracking-[0.4em] uppercase font-bold text-gray-400">
                     {{ $setting->tagline ?? 'Cerdas, Tajam, Terpercaya' }}
                 </p>
             </div>
-
             <div>
                 <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-[0.2em] border-b-2 border-sumbar w-fit pb-1">Navigasi Cepat</h4>
                 <ul class="text-[11px] text-slate-500 space-y-3 font-bold uppercase tracking-widest">
                     <li class="hover:text-sumbar transition-colors cursor-pointer" onclick="window.scrollTo(0,0)">Halaman Depan</li>
-                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#politik">Kanal Politik</a></li>
-                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#ekonomi">Kanal Ekonomi</a></li>
-                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#pendidikan">Kanal Pendidikan</a></li>
-                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#tv">Kanal TV</a></li>
+                    <li><a href="{{ url('/') }}#politik" class="hover:text-sumbar transition-colors">Kanal Politik</a></li>
+                    <li><a href="{{ url('/') }}#ekonomi" class="hover:text-sumbar transition-colors">Kanal Ekonomi</a></li>
+                    <li><a href="{{ url('/') }}#pendidikan" class="hover:text-sumbar transition-colors">Kanal Pendidikan</a></li>
+                    <li><a href="{{ url('/') }}#tv" class="hover:text-sumbar transition-colors">Kanal TV</a></li>
                 </ul>
             </div>
-
             <div>
                 <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-widest">Layanan Redaksi</h4>
-                <div class="flex flex-col gap-3">
-                    <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Hubungi Kami:</p>
-                        <p class="text-[11px] text-slate-700 font-black uppercase">{{ $setting->email }}</p>
-                    </div>
+                <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Hubungi Kami:</p>
+                    <p class="text-[11px] text-slate-700 font-black uppercase">{{ $setting->email ?? '-' }}</p>
                 </div>
             </div>
         </div>
-
         <div class="container mx-auto px-4 border-t border-slate-200 pt-8 text-center">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; 2026 Sumbar Fakta. Hak Cipta Dilindungi.</p>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; {{ date('Y') }} Sumbar Fakta. Hak Cipta Dilindungi.</p>
         </div>
     </footer>
 
@@ -339,23 +323,16 @@
         function searchFunction() {
             const input = document.getElementById('searchInput');
             const query = input.value.trim();
-
-            // 1. Jika input sedang tersembunyi, tampilkan dan fokus
             if (input.classList.contains('hidden')) {
                 input.classList.remove('hidden');
                 input.focus();
-            }
-            // 2. Jika input sudah tampil DAN ada teksnya, langsung cari
-            else if (query !== "") {
+            } else if (query !== "") {
                 window.location.href = "{{ route('news.search') }}?q=" + encodeURIComponent(query);
-            }
-            // 3. Jika input tampil tapi kosong, sembunyikan kembali
-            else {
+            } else {
                 input.classList.add('hidden');
             }
         }
-
-        // Menangani tekan tombol Enter
+        
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const query = this.value.trim();

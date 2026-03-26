@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('image_url')->nullable();
             $table->string('video_url')->nullable(); // Untuk link YouTube
             $table->enum('type', ['video', 'artikel', 'breaking'])->default('artikel');
+            $table->unsignedBigInteger('views')->default(0);
             $table->timestamps();
         });
     }
