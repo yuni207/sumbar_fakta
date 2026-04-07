@@ -4,13 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     {{-- MENGAMBIL TITLE DARI DATABASE --}}
-    <title>{{ $setting->title}}</title>
+    <title>{{ $setting->title ?? 'Sumbar Fakta' }}</title>
 
-    {{-- MENGAMBIL FAVICON DARI DATABASE --}}
     @if($setting && $setting->favicon)
     <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
     @else
-    <link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $setting->favicon) }}">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}">
     @endif
 
     <script src="https://cdn.tailwindcss.com"></script>
@@ -55,7 +54,7 @@
                 <a href="https://www.youtube.com/ServiceLogin?service=youtube" target="_blank" class="hover:text-sumbar"><i class="fab fa-youtube"></i></a>
                 <a href="https://twitter.com/login" target="_blank" class="hover:text-sumbar"><i class="fab fa-twitter"></i></a>
                 {{-- MENGAMBIL EMAIL DARI DATABASE --}}
-                <span class="border-l pl-4 tracking-normal font-normal">Hubungi Kami: {{ $setting->email}}</span>
+                <span class="border-l pl-4 tracking-normal font-normal">Hubungi Kami: {{ $setting->email ?? '-' }}</span>
             </div>
         </div>
     </div>
@@ -68,17 +67,12 @@
                 <h1 class="text-5xl font-black italic tracking-tighter">
                     @if($setting && $setting->title)
                     @php
-                    // Pecah kalimat menjadi array berdasarkan spasi
                     $words = explode(' ', $setting->title);
-                    // Ambil kata pertama
                     $firstWord = $words[0];
-                    // Ambil sisa katanya (jika ada)
                     $remainingWords = implode(' ', array_slice($words, 1));
                     @endphp
-
                     <span class="text-sumbar">{{ $firstWord }}</span><span class="text-gray-900">{{ $remainingWords }}</span>
                     @else
-                    {{-- Default jika data di database kosong --}}
                     <span class="text-sumbar">SUMBAR</span><span class="text-gray-900">FAKTA</span>
                     @endif
                 </h1>
@@ -89,15 +83,16 @@
                 </p>
             </div>
 
-            <div class="w-full max-w-[728px]">
-                {{-- MENGAMBIL BANNER IKLAN DARI DATABASE --}}
-                @if($setting && $setting->iklan)
-                <a href="#" target="_blank">
-                    <img src="{{ asset('storage/' . $setting->iklan) }}" alt="Iklan Header" class="w-full h-[90px] object-cover rounded shadow-sm border border-gray-100 hover:opacity-90 transition">
+            <div class="container mx-auto flex items-center justify-between py-4">
+
+                {{-- MENGAMBIL LOGO DARI DATABASE --}}
+                @if($setting && $setting->logo)
+                <a href="{{ url('/') }}">
+                    <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo Website" class="h-12 w-auto object-contain">
                 </a>
                 @else
-                <div class="w-full h-[90px] bg-gray-100 flex items-center justify-center text-gray-400 italic rounded">
-                    Space Iklan
+                <div class="h-12 flex items-center text-gray-400 italic">
+                    Logo Website
                 </div>
                 @endif
             </div>
@@ -112,7 +107,6 @@
                 <li><a href="{{ url('/') }}#ekonomi" class="hover:bg-black/10 px-2 py-1 transition">Ekonomi</a></li>
                 <li><a href="{{ url('/') }}#pendidikan" class="hover:bg-black/10 px-2 py-1 transition">Pendidikan</a></li>
                 <li><a href="{{ url('/') }}#hukum" class="hover:bg-black/10 px-2 py-1 transition">Hukum & Kriminal</a></li>
-
                 <li>
                     <a href="{{ url('/') }}#tv" class="flex items-center gap-2 bg-white/10 hover:bg-white/20 px-3 py-1 rounded transition border border-white/20">
                         <i class="fas fa-tv text-[12px]"></i>
@@ -136,11 +130,9 @@
             <span class="bg-gray-800 text-white text-[10px] font-bold px-2 py-1 uppercase italic mr-4 shrink-0 tracking-widest">
                 Terkini
             </span>
-
             <marquee class="text-sm font-medium text-gray-600" onmouseover="this.stop();" onmouseout="this.start();">
                 @forelse($running_news as $news)
                 <span class="mx-4">
-                    {{-- Mengambil cuplikan Konten (bukan Judul) --}}
                     <span class="text-sumbar font-bold"></span>
                     {{ Str::limit(strip_tags($news->content), 100, '...') }}
                 </span>
@@ -283,57 +275,19 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded shadow-lg overflow-hidden border relative">
+                <div class="w-full">
 
-                    <!-- Label Iklan -->
-                    <span class="text-[9px] bg-gray-800 text-white px-2 py-1 rounded absolute top-2 right-2">
-                        ADS
-                    </span>
+                    @if(!empty($setting?->iklan))
 
-                    <!-- Gambar Iklan -->
-                    <a href="https://www.tokopedia.com" target="_blank">
-                        <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f" alt="Promo Belanja Online" class="w-full h-48 object-cover">
-                    </a>
+                    <img src="{{ asset('storage/'.$setting->iklan) }}" alt="Iklan Header" class="w-full h-auto rounded shadow-sm border border-gray-100">
 
-                    <!-- Konten Iklan -->
-                    <div class="p-4">
+                    @else
 
-                        <h4 class="font-bold text-sm mb-2">
-                            Promo Belanja Online Terbesar!
-                        </h4>
-
-                        <p class="text-xs text-gray-600 mb-3">
-                            Nikmati berbagai promo menarik mulai dari elektronik, fashion, hingga kebutuhan rumah tangga.
-                            Diskon hingga <b>70%</b> dan gratis ongkir untuk berbagai produk pilihan.
-                        </p>
-
-                        <!-- Tombol -->
-                        <a href="https://www.tokopedia.com" target="_blank" class="block text-center bg-green-600 text-white text-xs font-semibold py-2 rounded hover:bg-green-700 transition">
-                            Lihat Promo
-                        </a>
-
-                        <!-- Garis -->
-                        <hr class="my-4">
-
-                        <!-- Iklan kedua -->
-                        <a href="https://www.traveloka.com" target="_blank">
-                            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt="Promo Liburan" class="w-full h-40 object-cover rounded mb-3">
-                        </a>
-
-                        <h4 class="font-bold text-sm mb-1">
-                            Promo Tiket & Hotel Murah
-                        </h4>
-
-                        <p class="text-xs text-gray-600 mb-3">
-                            Rencanakan liburan Anda sekarang dengan harga spesial.
-                            Dapatkan diskon tiket pesawat dan hotel hingga 50%.
-                        </p>
-
-                        <a href="https://www.traveloka.com" target="_blank" class="block text-center bg-blue-600 text-white text-xs font-semibold py-2 rounded hover:bg-blue-700 transition">
-                            Pesan Sekarang
-                        </a>
-
+                    <div class="w-full py-10 bg-gray-100 flex items-center justify-center text-gray-400 italic rounded">
+                        Space Iklan
                     </div>
+
+                    @endif
 
                 </div>
             </aside>
@@ -350,7 +304,6 @@
                     $firstWord = $words[0];
                     $remainingWords = count($words) > 1 ? implode(' ', array_slice($words, 1)) : '';
                     @endphp
-
                     <span class="text-sumbar">{{ $firstWord }}</span>
                     @if($remainingWords)
                     <span class="text-slate-800">&nbsp;{{ $remainingWords }}</span>
@@ -376,19 +329,31 @@
                 </ul>
             </div>
 
-            <div>
-                <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-widest">Layanan Redaksi</h4>
-                <div class="flex flex-col gap-3">
-                    <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Hubungi Kami:</p>
-                        <p class="text-[11px] text-slate-700 font-black uppercase">{{ $setting->email }}</p>
+            <a href="{{ route('frontend.redaksi') }}">
+                <div>
+                    <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-widest">
+                        Box Redaksi
+                    </h4>
+
+                    <div class="flex flex-col gap-3">
+                        <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm hover:bg-slate-50 transition">
+
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">
+                                Hubungi Kami:
+                            </p>
+
+                            <p class="text-[11px] text-slate-700 font-black uppercase">
+                                {{ $setting->email ?? '-' }}
+                            </p>
+
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="container mx-auto px-4 border-t border-slate-200 pt-8 text-center">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; 2026 Sumbar Fakta. Hak Cipta Dilindungi.</p>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; {{ date('Y') }} {{ $setting->title ?? 'Sumbar Fakta' }}. Hak Cipta Dilindungi.</p>
         </div>
     </footer>
 

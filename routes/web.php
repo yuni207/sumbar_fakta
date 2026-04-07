@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Admin\HomeController;
 use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\Admin\PostController;
+use App\Http\Controllers\Admin\RedaksiController;
 use App\Models\Setting;
 use App\Models\Post;
 
@@ -17,6 +18,9 @@ Route::get('/', function () {
 
     return view('frontend.index', compact('setting', 'main_news', 'running_news', 'posts'));
 });
+
+Route::get('/redaksi',[App\Http\Controllers\Admin\RedaksiController::class, 'frontend'])
+        ->name('frontend.redaksi');
 
 /** * PINDAHKAN KE SINI:
  * Agar pengunjung bisa mencari berita tanpa harus login admin
@@ -58,6 +62,19 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
     Route::prefix('posts')
         ->name('posts.')
         ->controller(PostController::class)
+        ->group(function () {
+            Route::get('/', 'index')->name('index');
+            Route::get('/add', 'create')->name('add');
+            Route::post('/store', 'store')->name('store');
+            Route::get('/edit/{id}', 'edit')->name('edit');
+            Route::put('/update/{id}', 'update')->name('update');
+            Route::get('/delete/{id}', 'destroy')->name('delete');
+        });
+
+    // Redaksi
+    Route::prefix('redaksi')
+        ->name('redaksi.')
+        ->controller(RedaksiController::class)
         ->group(function () {
             Route::get('/', 'index')->name('index');
             Route::get('/add', 'create')->name('add');

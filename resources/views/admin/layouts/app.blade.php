@@ -129,6 +129,7 @@
                         <ul class="submenu">
                             <li><a href="{{ route('admin.setting.index') }}" class="{{ $activePage == 'setting' ? 'active' : '' }}">Identitas</a></li>
                             <li><a href="{{ route('admin.posts.index') }}" class="{{ $activePage == 'posts' ? 'active' : '' }}">Postingan</a></li>
+                            <li><a href="{{ route('admin.redaksi.index') }}" class="{{ $activePage == 'redaksi' ? 'active' : '' }}">Redaksi</a></li>
                         </ul>
                     </li>
                 </ul>

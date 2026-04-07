@@ -212,7 +212,7 @@
                     </h3>
                     <div class="grid md:grid-cols-2 gap-6">
                         @foreach($posts->where('category', 'Politik')->take(2) as $pol)
-                       
+
                         <a href="{{ route('news.show', $pol->slug) }}" class="group cursor-pointer block">
                             <div class="h-48 overflow-hidden rounded mb-3">
                                 <img src="{{ asset('storage/' . $pol->image_url) }}" class="w-full h-full object-cover group-hover:scale-110 transition duration-500" alt="{{ $pol->title }}">
@@ -228,7 +228,7 @@
                         <span class="bg-sumbar text-white px-2 mr-2">E</span> Ekonomi
                     </h3>
                     @foreach($posts->where('category', 'Ekonomi')->take(1) as $eko)
-                  
+
                     <a href="{{ route('news.show', $eko->slug) }}" class="bg-white p-4 rounded shadow-sm flex gap-4 hover:shadow-md transition group block">
                         <img src="{{ asset('storage/' . $eko->image_url) }}" class="w-24 h-24 object-cover rounded" alt="{{ $eko->title }}">
                         <div>
@@ -249,7 +249,7 @@
                         <div class="flex items-start gap-4 border-b pb-4">
                             <i class="fas fa-graduation-cap text-sumbar mt-1 text-xl"></i>
                             <div>
-                               
+
                                 <a href="{{ route('news.show', $pen->slug) }}">
                                     <h4 class="font-bold text-gray-800 hover:text-sumbar cursor-pointer transition">{{ $pen->title }}</h4>
                                 </a>
@@ -272,7 +272,7 @@
                         <a href="{{ route('news.show', $hukMain->slug) }}" class="relative h-64 rounded-lg overflow-hidden group mb-4 block">
                             <img src="{{ asset('storage/' . $hukMain->image_url) }}" class="w-full h-full object-cover group-hover:scale-105 transition duration-500" alt="{{ $hukMain->title }}">
                             <div class="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black text-white">
-                                
+
                                 @if($hukMain->type == 'breaking')
                                 <span class="bg-yellow-500 text-black text-[10px] font-black px-2 py-0.5 uppercase mb-2 inline-block">Breaking News</span>
                                 @endif
@@ -284,7 +284,7 @@
 
                         <div class="grid md:grid-cols-2 gap-4">
                             @foreach($hukumPosts->skip(1)->take(2) as $hukSide)
-                            
+
                             <a href="{{ route('news.show', $hukSide->slug) }}" class="flex gap-4 border-b pb-4 border-gray-200 group">
                                 <div class="w-20 h-20 bg-gray-200 rounded shrink-0 flex items-center justify-center text-sumbar group-hover:bg-sumbar group-hover:text-white transition">
                                     <i class="fas fa-gavel text-2xl"></i>
@@ -309,7 +309,7 @@
                         <a href="https://www.islamicfinder.org/world/indonesia/padang/prayer-times/" target="_blank" class="hover:text-gray-200 flex items-center group transition">
                             <h3 class="font-black uppercase text-xs tracking-widest italic flex items-center">
                                 <i class="fas fa-mosque mr-2 group-hover:scale-110 transition"></i>
-                                
+
                                 Jadwal Sholat {{ $setting->city_name ?? 'Padang' }}
                             </h3>
                             <i class="fas fa-external-link-alt text-[8px] ml-2 opacity-70"></i>
@@ -461,16 +461,27 @@
                 </ul>
             </div>
 
-            <div>
-                <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-widest">Layanan Redaksi</h4>
-                <div class="flex flex-col gap-3">
-                    <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                        <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Hubungi Kami:</p>
-                      
-                        <p class="text-[11px] text-slate-700 font-black uppercase">{{ $setting->email ?? '-' }}</p>
+            <a href="{{ route('frontend.redaksi') }}">
+                <div>
+                    <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-widest">
+                        Box Redaksi
+                    </h4>
+
+                    <div class="flex flex-col gap-3">
+                        <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm hover:bg-slate-50 transition">
+
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">
+                                Hubungi Kami:
+                            </p>
+
+                            <p class="text-[11px] text-slate-700 font-black uppercase">
+                                {{ $setting->email ?? '-' }}
+                            </p>
+
+                        </div>
                     </div>
                 </div>
-            </div>
+            </a>
         </div>
 
         <div class="container mx-auto px-4 border-t border-slate-200 pt-8 text-center">

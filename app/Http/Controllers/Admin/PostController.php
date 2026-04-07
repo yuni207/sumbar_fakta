@@ -24,7 +24,7 @@ class PostController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'category'     => 'required|in:Berita Utama,Politik,Ekonomi,Pendidikan,Hukum',
+            'category'     => 'required|in:TV,Politik,Ekonomi,Pendidikan,Hukum',
             'title'        => 'required|max:255',
             'content'      => 'required',
             'author'       => 'required|string|max:100',

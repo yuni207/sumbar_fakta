@@ -62,24 +62,26 @@ class SettingController extends Controller
         $setting = Setting::findOrFail($id);
 
         $request->validate([
-            'title' => 'required',
-            'email' => 'required|email',
+            'title'   => 'required',
+            'email'   => 'required|email',
             'tagline' => 'required',
+            'favicon' => 'nullable|image|mimes:jpeg,png,jpg,gif,ico|max:2048',
+            'logo'    => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'iklan'   => 'nullable|image|mimes:jpeg,png,jpg,gif|max:5120',
         ]);
 
-        // Menggunakan except agar _token dan _method tidak ikut masuk ke array update
-        $data = $request->except(['_token', '_method']);
+        // ✅ Hanya ambil field teks dulu
+        $data = $request->only(['title', 'tagline', 'email']);
 
-        // Update Favicon
+        // ✅ Update Favicon hanya jika ada file baru
         if ($request->hasFile('favicon')) {
-            // Hapus file lama jika ada
             if ($setting->favicon) {
                 Storage::disk('public')->delete($setting->favicon);
             }
             $data['favicon'] = $request->file('favicon')->store('images', 'public');
         }
 
-        // Update Logo
+        // ✅ Update Logo hanya jika ada file baru
         if ($request->hasFile('logo')) {
             if ($setting->logo) {
                 Storage::disk('public')->delete($setting->logo);
@@ -87,7 +89,7 @@ class SettingController extends Controller
             $data['logo'] = $request->file('logo')->store('images', 'public');
         }
 
-        // Update Iklan
+        // ✅ Update Iklan hanya jika ada file baru
         if ($request->hasFile('iklan')) {
             if ($setting->iklan) {
                 Storage::disk('public')->delete($setting->iklan);
@@ -97,7 +99,8 @@ class SettingController extends Controller
 
         $setting->update($data);
 
-        return redirect()->route('admin.setting.index')->with('success', 'Identitas berhasil diperbarui!');
+        return redirect()->route('admin.setting.index')
+            ->with('success', 'Identitas berhasil diperbarui!');
     }
 
     public function destroy($id)

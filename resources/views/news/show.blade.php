@@ -79,13 +79,17 @@
                 </p>
             </div>
 
-            <div class="w-full max-w-[728px]">
-                @if($setting && $setting->iklan)
-                <a href="#" target="_blank">
-                    <img src="{{ asset('storage/' . $setting->iklan) }}" alt="Iklan" class="w-full h-[90px] object-cover rounded shadow-sm border border-gray-100 hover:opacity-90 transition">
+            <div class="container mx-auto flex items-center justify-between py-4">
+
+                {{-- MENGAMBIL LOGO DARI DATABASE --}}
+                @if($setting && $setting->logo)
+                <a href="{{ url('/') }}">
+                    <img src="{{ asset('storage/' . $setting->logo) }}" alt="Logo Website" class="h-12 w-auto object-contain">
                 </a>
                 @else
-                <div class="w-full h-[90px] bg-gray-100 flex items-center justify-center text-gray-400 italic rounded border border-dashed">Space Iklan</div>
+                <div class="h-12 flex items-center text-gray-400 italic">
+                    Logo Website 
+                </div>
                 @endif
             </div>
         </div>
@@ -248,27 +252,20 @@
                 </div>
 
                 {{-- IKLAN SIDEBAR --}}
-                <div class="bg-white rounded shadow-lg overflow-hidden border relative">
-                    <span class="text-[9px] bg-gray-800 text-white px-2 py-1 rounded absolute top-2 right-2">ADS</span>
-                    <a href="https://www.tokopedia.com" target="_blank">
-                        <img src="https://images.unsplash.com/photo-1607082349566-187342175e2f" alt="Promo Belanja Online" class="w-full h-48 object-cover">
-                    </a>
-                    <div class="p-4">
-                        <h4 class="font-bold text-sm mb-2">Promo Belanja Online Terbesar!</h4>
-                        <p class="text-xs text-gray-600 mb-3">Nikmati berbagai promo menarik. Diskon hingga <b>70%</b> dan gratis ongkir.</p>
-                        <a href="https://www.tokopedia.com" target="_blank" class="block text-center bg-green-600 text-white text-xs font-semibold py-2 rounded hover:bg-green-700 transition">
-                            Lihat Promo
-                        </a>
-                        <hr class="my-4">
-                        <a href="https://www.traveloka.com" target="_blank">
-                            <img src="https://images.unsplash.com/photo-1501785888041-af3ef285b470" alt="Promo Liburan" class="w-full h-40 object-cover rounded mb-3">
-                        </a>
-                        <h4 class="font-bold text-sm mb-1">Promo Tiket & Hotel Murah</h4>
-                        <p class="text-xs text-gray-600 mb-3">Dapatkan diskon tiket pesawat dan hotel hingga 50%.</p>
-                        <a href="https://www.traveloka.com" target="_blank" class="block text-center bg-blue-600 text-white text-xs font-semibold py-2 rounded hover:bg-blue-700 transition">
-                            Pesan Sekarang
-                        </a>
+                <div class="w-full">
+
+                    @if(!empty($setting?->iklan))
+
+                    <img src="{{ asset('storage/'.$setting->iklan) }}" alt="Iklan Header" class="w-full h-auto rounded shadow-sm border border-gray-100">
+
+                    @else
+
+                    <div class="w-full py-10 bg-gray-100 flex items-center justify-center text-gray-400 italic rounded">
+                        Space Iklan
                     </div>
+
+                    @endif
+
                 </div>
 
             </aside>
@@ -287,35 +284,55 @@
                     $remainingWords = count($words) > 1 ? implode(' ', array_slice($words, 1)) : '';
                     @endphp
                     <span class="text-sumbar">{{ $firstWord }}</span>
-                    @if($remainingWords)<span class="text-slate-800">&nbsp;{{ $remainingWords }}</span>@endif
+                    @if($remainingWords)
+                    <span class="text-slate-800">&nbsp;{{ $remainingWords }}</span>
+                    @endif
                     @else
-                    <span class="text-sumbar">SUMBAR</span><span class="text-slate-800">&nbsp;FAKTA</span>
+                    <span class="text-sumbar">SUMBAR</span>
+                    <span class="text-slate-800">&nbsp;FAKTA</span>
                     @endif
                 </h2>
                 <p class="text-[10px] tracking-[0.4em] uppercase font-bold text-gray-400">
                     {{ $setting->tagline ?? 'Cerdas, Tajam, Terpercaya' }}
                 </p>
             </div>
+
             <div>
                 <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-[0.2em] border-b-2 border-sumbar w-fit pb-1">Navigasi Cepat</h4>
                 <ul class="text-[11px] text-slate-500 space-y-3 font-bold uppercase tracking-widest">
                     <li class="hover:text-sumbar transition-colors cursor-pointer" onclick="window.scrollTo(0,0)">Halaman Depan</li>
-                    <li><a href="{{ url('/') }}#politik" class="hover:text-sumbar transition-colors">Kanal Politik</a></li>
-                    <li><a href="{{ url('/') }}#ekonomi" class="hover:text-sumbar transition-colors">Kanal Ekonomi</a></li>
-                    <li><a href="{{ url('/') }}#pendidikan" class="hover:text-sumbar transition-colors">Kanal Pendidikan</a></li>
-                    <li><a href="{{ url('/') }}#tv" class="hover:text-sumbar transition-colors">Kanal TV</a></li>
+                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#politik">Kanal Politik</a></li>
+                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#ekonomi">Kanal Ekonomi</a></li>
+                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#pendidikan">Kanal Pendidikan</a></li>
+                    <li class="hover:text-sumbar transition-colors cursor-pointer"><a href="{{ url('/') }}#tv">Kanal TV</a></li>
                 </ul>
             </div>
-            <div>
-                <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-widest">Layanan Redaksi</h4>
-                <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Hubungi Kami:</p>
-                    <p class="text-[11px] text-slate-700 font-black uppercase">{{ $setting->email ?? '-' }}</p>
+
+            <a href="{{ route('frontend.redaksi') }}">
+                <div>
+                    <h4 class="font-bold uppercase mb-6 text-sm text-slate-900 tracking-widest">
+                        Box Redaksi
+                    </h4>
+
+                    <div class="flex flex-col gap-3">
+                        <div class="mt-2 bg-white p-3 rounded-lg border border-slate-200 shadow-sm hover:bg-slate-50 transition">
+
+                            <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">
+                                Hubungi Kami:
+                            </p>
+
+                            <p class="text-[11px] text-slate-700 font-black uppercase">
+                                {{ $setting->email ?? '-' }}
+                            </p>
+
+                        </div>
+                    </div>
                 </div>
-            </div>
+            </a>
         </div>
+
         <div class="container mx-auto px-4 border-t border-slate-200 pt-8 text-center">
-            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; {{ date('Y') }} Sumbar Fakta. Hak Cipta Dilindungi.</p>
+            <p class="text-[10px] text-slate-400 font-bold uppercase tracking-[0.3em]">&copy; {{ date('Y') }} {{ $setting->title ?? 'Sumbar Fakta' }}. Hak Cipta Dilindungi.</p>
         </div>
     </footer>
 
@@ -332,7 +349,7 @@
                 input.classList.add('hidden');
             }
         }
-        
+
         document.getElementById('searchInput').addEventListener('keypress', function(e) {
             if (e.key === 'Enter') {
                 const query = this.value.trim();
